@@ -1,0 +1,7 @@
+import React from "react"
+type InputProps={
+    TextChangeEvent:(event: React.ChangeEvent<HTMLInputElement>)=>void
+}
+export const Input = (props:InputProps) =>{
+    return <input type='text' onChange={props.TextChangeEvent}/>
+}
