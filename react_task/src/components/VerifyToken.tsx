@@ -7,7 +7,7 @@ function VerifyToken() {
   const [errorMessage, setErrorMessage] = useState('')
   const [tokenVerified,setTokenVerification]=useState(false)
   const [successMessage, setSuccessMessage] = useState('')
-  const apiUrl=process.env.REACT_APP_API_URL
+  const apiUrl=process.env.NEXT_PUBLIC_REACT_APP_API_URL
   const verifyToken = async () => {
     try {
       const response = await axios.post(

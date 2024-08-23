@@ -1,53 +1,57 @@
+"use client"
 import React, { useReducer, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import Input from './Input'
+import Input from './components/Input'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import axios from 'axios'
-import {Link,useNavigate} from 'react-router-dom'
+import { redirect } from 'next/navigation'
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 type FormElement = {
-    Username: string;
-    FirstName:string;
-    LastName:string;
-    Email: string;
-    PhoneNumber: string;
-    Password: string;
-    ConfirmPassword: string;
+  Username: string;
+  FirstName:string;
+  LastName:string;
+  Email: string;
+  PhoneNumber: string;
+  Password: string;
+  ConfirmPassword: string;
 }
 type FormAction = {
-    type: string;
-    error?: string;
+  type: string;
+  error?: string;
 }
 type SubmitState = {
-    loading: boolean;
-    error: string;
+  loading: boolean;
+  error: string;
 }
 const initialState: SubmitState = {
-    loading: false,
-    error: ''
+  loading: false,
+  error: ''
 }
 function formReducer(state: SubmitState, action: FormAction): SubmitState {
-    switch (action.type) {
-        case 'SUBMIT':
-            return { ...state, loading: true, error: '' }
-        case 'SUCCESS':
-            return { ...state, loading: false }
-        case 'ERROR':
-            return { ...state, loading: false, error: action.error || '' }
-        default:
-            return state
-    }
+  switch (action.type) {
+      case 'SUBMIT':
+          return { ...state, loading: true, error: '' }
+      case 'SUCCESS':
+          return { ...state, loading: false }
+      case 'ERROR':
+          return { ...state, loading: false, error: action.error || '' }
+      default:
+          return state
+  }
 }
-
-function Register() {
-    const apiUrl=process.env.NEXT_PUBLIC_REACT_APP_API_URL
+export default function Home() 
+{
+  const apiUrl=process.env.NEXT_PUBLIC_REACT_APP_API_URL
     const { register, handleSubmit, watch,formState: { errors },reset } = useForm<FormElement>({
         mode:"onChange"
     });
     const [phoneNumber, setPhoneNumber] = useState<string | undefined>()
     const [state, dispatch] = useReducer(formReducer, initialState)
     const [phoneNumberError,setPhoneNumberError]=useState(false)
-    const navigate = useNavigate()
+    const router = useRouter();
+    //const navigate = useNavigate()
     const onSubmit: SubmitHandler<FormElement> = async (data) => {
         if(phoneNumber===undefined || phoneNumber==="")
         {
@@ -68,16 +72,24 @@ function Register() {
                 });
                 dispatch({ type: 'SUCCESS' })
                 reset()
-                navigate('/login')
-            } catch (error:any) {
-                dispatch({ type: 'ERROR', error: error.response.data.message })
+                router.push('/login');
+            } catch (error:any) 
+            {
+                console.log('error==',error)
+                if(error.response.status==500)
+                {
+                    dispatch({ type: 'ERROR', error: error.response.statusText})
+                }
+                else
+                {
+                    dispatch({ type: 'ERROR', error: error.response.data.message })
+                }
             }
         }
     };
-
-    return (
-        <>
-            <div className='d-flex align-items-center py-4 bg-body-tertiary h-100'>
+  return (
+    <>
+            <div className='d-flex align-items-center py-4 bg-body-dark h-100'>
                 <div className="form-signin w-100 m-auto">
                     <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
                         <Input
@@ -143,13 +155,14 @@ function Register() {
                         {state.error && <h3 className='text-danger font-weight-bolder'>{state.error}</h3>}
                     </form>
                     <br/>
-                    <h5 className='text-center'><Link to="login" style={{textDecoration:'none'}}>Click Here to Log-In</Link></h5>
-                    
+                    <h5 className='text-center'>
+                        <Link href="/login" passHref>
+                            Click Here to Log-In
+                        </Link>
+                    </h5>
                 </div>    
             </div>
             
         </>
-    );
+  );
 }
-
-export default Register;

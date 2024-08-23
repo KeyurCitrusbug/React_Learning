@@ -1,8 +1,9 @@
+"use client"
 import React, { useReducer } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom'
-import Input from './Input'
+import Input from '../components/Input'
+import { useRouter } from 'next/navigation'
 type FormElement = {
   Email: string;
 }
@@ -38,7 +39,7 @@ function ForgotPassword()
   const apiUrl=process.env.NEXT_PUBLIC_REACT_APP_API_URL
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormElement>({ mode: "onChange" })
   const [state, dispatch] = useReducer(formReducer, initialState)
-  const navigate = useNavigate()
+  const router = useRouter();
   const onSubmit: SubmitHandler<FormElement> = async (data) => {
     dispatch({ type: 'SUBMIT' })
     try {
@@ -53,7 +54,7 @@ function ForgotPassword()
   };
 
   return (
-    <div className='d-flex align-items-center py-4 bg-body-tertiary h-100'>
+    <div className='d-flex align-items-center py-4 bg-body-dark h-100'>
       <div className="form-signin w-100 m-auto">
         <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
           <Input
